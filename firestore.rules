@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users can only read/write their own profile
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+    
+    // Tournaments — anyone can read, only authenticated for registration check
+    match /tournaments/{tournamentId} {
+      allow read: if true;
+      allow write: if false; // Only via admin backend
+    }
+    
+    // Registrations — users can read own, write if authenticated
+    match /registrations/{regId} {
+      allow read: if request.auth != null && 
+        (resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Gift cards — only read (validation happens server-side)
+    match /giftCards/{cardId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    
+    // Redeem codes — only read
+    match /redeemCodes/{codeId} {
+      allow read: if request.auth != null;
+      allow update: if request.auth != null; // For currentUses increment
+    }
+    
+    // FCM Tokens — users can write their own
+    match /fcmTokens/{tokenId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+    
+    // Transactions — users can read own
+    match /transactions/{txId} {
+      allow read: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null;
+    }
+  }
+}
