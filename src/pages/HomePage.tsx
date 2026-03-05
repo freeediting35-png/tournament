@@ -6,6 +6,8 @@ import FeaturesSection from '../components/home/FeaturesSection';
 import StatsSection from '../components/home/StatsSection';
 import HowItWorks from '../components/home/HowItWorks';
 import TestimonialsSection from '../components/home/TestimonialsSection';
+import WatchRoom from '../components/home/WatchRoom';
+import AiPredictor from '../components/home/AiPredictor';
 import RegistrationModal from '../components/tournament/RegistrationModal';
 import FreefireIDModal from '../components/auth/FreefireIDModal';
 import { useAuth } from '../hooks/useAuth';
@@ -25,6 +27,8 @@ const HomePage: React.FC = () => {
             <FreefireIDModal isOpen={!!user && needsFreefireId} />
             <HeroSection />
             <LiveTournaments onRegister={handleRegister} />
+            <WatchRoom />
+            <AiPredictor />
             <FeaturesSection />
             <HowItWorks />
             <StatsSection />

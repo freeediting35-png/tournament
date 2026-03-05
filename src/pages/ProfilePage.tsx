@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Edit2, Trophy, Wallet, Clock } from 'lucide-react';
+import { Edit2, Trophy, Wallet, Clock, Shield, TrendingUp, AlertCircle, Award, Star } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -30,12 +30,18 @@ const ProfilePage: React.FC = () => {
         return (
             <Layout>
                 <div className="container py-20 text-center">
-                    <p className="text-6xl mb-6">👤</p>
-                    <h2 className="font-display font-bold text-white text-2xl mb-3">Sign in to view your profile</h2>
-                    <p className="text-text-secondary mb-6 text-sm">Connect with Google to access your tournaments, wallet, and history</p>
-                    <Button variant="primary" size="lg" onClick={login} icon={<img src="https://www.google.com/favicon.ico" className="w-5 h-5" />}>
-                        Sign In with Google
-                    </Button>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="max-w-sm mx-auto glass-ultra border border-white/10 rounded-3xl p-10"
+                    >
+                        <p className="text-7xl mb-6 animate-float">👤</p>
+                        <h2 className="font-display font-bold text-white text-2xl mb-3">Sign in to view your profile</h2>
+                        <p className="text-text-secondary mb-6 text-sm">Connect with Google to access your tournaments, wallet, and history</p>
+                        <Button variant="primary" size="lg" onClick={login} icon={<img src="https://www.google.com/favicon.ico" className="w-5 h-5" />}>
+                            Sign In with Google
+                        </Button>
+                    </motion.div>
                 </div>
             </Layout>
         );
@@ -48,22 +54,25 @@ const ProfilePage: React.FC = () => {
         <Layout>
             <FreefireIDModal isOpen={needsFreefireId} />
             <div className="container py-8 xl:py-12">
-                {/* Profile Header */}
+                {/* Profile Header — Enhanced (all existing fields preserved) */}
                 <motion.div
-                    className="card-glass p-6 mb-6 flex flex-col xl:flex-row items-start xl:items-center gap-5"
+                    className="glass-ultra border border-white/10 rounded-3xl p-6 mb-6 flex flex-col xl:flex-row items-start xl:items-center gap-5"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <img
-                        src={user.photoURL ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'U')}&background=FF4500&color=fff&size=128`}
-                        alt="Profile"
-                        className="w-20 h-20 rounded-2xl border-2 border-primary/50"
-                    />
+                    {/* Avatar with gradient border (additive visual) */}
+                    <div className="avatar-gradient-border shrink-0">
+                        <img
+                            src={user.photoURL ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'U')}&background=FF4500&color=fff&size=128`}
+                            alt="Profile"
+                            className="w-20 h-20 rounded-2xl"
+                        />
+                    </div>
                     <div className="flex-1">
                         <h1 className="font-display font-bold text-white text-2xl">{user.displayName}</h1>
                         <p className="text-text-secondary text-sm">{user.email}</p>
                         {user.freefireId ? (
-                            <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-2 mt-2 flex-wrap">
                                 <span className="text-xs bg-primary/20 border border-primary/30 text-primary rounded-full px-3 py-1 font-mono">
                                     🎮 FF UID: {user.freefireId}
                                 </span>
@@ -79,11 +88,26 @@ const ProfilePage: React.FC = () => {
                                 + Link Free Fire ID
                             </button>
                         )}
+                        {/* Achievement badges (additive visual) */}
+                        <div className="flex items-center gap-2 mt-3 flex-wrap">
+                            {registrations.length >= 1 && (
+                                <span className="achievement-badge" style={{ background: 'rgba(255,69,0,0.15)', border: '1px solid rgba(255,69,0,0.4)', color: '#FF4500' }}>🏹 First Blood</span>
+                            )}
+                            {registrations.length >= 5 && (
+                                <span className="achievement-badge" style={{ background: 'rgba(255,215,0,0.15)', border: '1px solid rgba(255,215,0,0.4)', color: '#FFD700' }}>⭐ Veteran</span>
+                            )}
+                            {registrations.length >= 10 && (
+                                <span className="achievement-badge" style={{ background: 'rgba(0,229,255,0.15)', border: '1px solid rgba(0,229,255,0.4)', color: '#00E5FF' }}>💎 Diamond</span>
+                            )}
+                            {(user.wallet ?? 0) > 0 && (
+                                <span className="achievement-badge" style={{ background: 'rgba(0,200,83,0.15)', border: '1px solid rgba(0,200,83,0.4)', color: '#00C853' }}>💸 Winner</span>
+                            )}
+                        </div>
                     </div>
                     <Button variant="ghost" size="sm" onClick={logout}>Sign Out</Button>
                 </motion.div>
 
-                {/* Stats */}
+                {/* Stats — preserved + wallet highlighted */}
                 <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
                     {[
                         { label: 'Tournaments Joined', value: registrations.length, icon: Trophy, color: '#FF4500' },
@@ -91,16 +115,27 @@ const ProfilePage: React.FC = () => {
                         { label: 'Wallet Balance', value: formatCurrency(user.wallet ?? 0), icon: Wallet, color: '#00C853' },
                         { label: 'Upcoming', value: upcoming.length, icon: Clock, color: '#00E5FF' },
                     ].map(s => (
-                        <div key={s.label} className="card-glass p-4 text-center">
+                        <motion.div
+                            key={s.label}
+                            className="glass-surface border border-white/8 rounded-2xl p-4 text-center"
+                            whileHover={{ y: -3, borderColor: `${s.color}40` }}
+                            transition={{ duration: 0.2 }}
+                        >
                             <s.icon size={20} style={{ color: s.color }} className="mx-auto mb-2" />
                             <p className="font-display font-bold text-white text-xl">{s.value}</p>
                             <p className="text-text-secondary text-xs">{s.label}</p>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
 
                 {/* Registrations */}
-                <h2 className="font-display font-bold text-white text-xl mb-4">My Registrations</h2>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-display font-bold text-white text-xl">My Registrations</h2>
+                    {/* Dispute button — additive feature */}
+                    <button className="dispute-btn" title="Report an issue with a match">
+                        <AlertCircle size={14} /> Request Admin
+                    </button>
+                </div>
                 {loading ? (
                     <div className="flex justify-center py-12"><LoadingSpinner /></div>
                 ) : registrations.length === 0 ? (

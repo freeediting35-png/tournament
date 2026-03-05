@@ -64,20 +64,23 @@ const FeaturesSection: React.FC = () => (
                 {FEATURES.map((f, i) => (
                     <motion.div
                         key={f.title}
-                        className="card-glass p-6 flex gap-4"
+                        className="card-glass holo-card p-6 flex gap-4 group"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.07, duration: 0.4 }}
+                        whileHover={{ borderColor: `${f.color}40` }}
                     >
-                        <div
-                            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                            style={{ background: `${f.color}20`, border: `1px solid ${f.color}40` }}
+                        <motion.div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                            style={{ background: `${f.color}18`, border: `1px solid ${f.color}35` }}
+                            whileHover={{ scale: 1.1, boxShadow: `0 0 20px ${f.color}60` }}
+                            transition={{ duration: 0.2 }}
                         >
-                            <f.icon size={22} style={{ color: f.color }} />
-                        </div>
+                            <f.icon size={24} style={{ color: f.color }} />
+                        </motion.div>
                         <div>
-                            <h3 className="font-display font-bold text-white text-lg mb-1">{f.title}</h3>
+                            <h3 className="font-display font-bold text-white text-lg mb-1 group-hover:text-primary transition-colors">{f.title}</h3>
                             <p className="text-text-secondary text-sm leading-relaxed">{f.desc}</p>
                         </div>
                     </motion.div>
