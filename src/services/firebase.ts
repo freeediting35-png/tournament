@@ -5,12 +5,12 @@ import { getMessaging, isSupported } from 'firebase/messaging';
 import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    apiKey: "AIzaSyDeUHLMvQw5NXJ5HZR5lJ9Da7N7ZqBhjpo",
+    authDomain: "cyber-rpg.firebaseapp.com",
+    projectId: "cyber-rpg",
+    storageBucket: "cyber-rpg.firebasestorage.app",
+    messagingSenderId: "986429953692",
+    appId: "1:986429953692:web:62e271be56419dcc3cff59",
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 

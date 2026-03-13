@@ -1,15 +1,25 @@
 import { auth, db } from './firebase';
-import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
+    signOut,
+    type UserCredential,
+} from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '../types';
 
-export const signInWithGoogle = async (): Promise<{ user: UserProfile; isNewUser: boolean }> => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-    const result = await signInWithPopup(auth, provider);
-    const { user } = result;
-
+/**
+ * Creates or fetches the Firestore user profile from a Firebase UserCredential.
+ */
+export const resolveUserProfile = async (
+    credential: UserCredential
+): Promise<{ user: UserProfile; isNewUser: boolean }> => {
+    const { user } = credential;
     const userRef = doc(db, 'users', user.uid);
     const userSnap = await getDoc(userRef);
 
@@ -33,6 +43,42 @@ export const signInWithGoogle = async (): Promise<{ user: UserProfile; isNewUser
     }
 
     return { user: userSnap.data() as UserProfile, isNewUser: false };
+};
+
+/**
+ * Attempts popup sign-in first; falls back to redirect on popup failure.
+ */
+export const signInWithGoogle = async (): Promise<{ user: UserProfile; isNewUser: boolean }> => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        return await resolveUserProfile(result);
+    } catch (err: any) {
+        const code: string = err?.code ?? '';
+
+        // Popup was blocked or closed — fall back to redirect flow
+        if (
+            code === 'auth/popup-blocked' ||
+            code === 'auth/popup-closed-by-user' ||
+            code === 'auth/cancelled-popup-request'
+        ) {
+            await signInWithRedirect(auth, googleProvider);
+            // The page will reload; the redirect result is handled in checkRedirectResult()
+            // Return a never-resolving promise so callers don't proceed
+            return new Promise(() => {});
+        }
+
+        // Re-throw everything else so the caller can show a toast
+        throw err;
+    }
+};
+
+/**
+ * Call once on app start to resolve pending redirect sign-in (mobile flow).
+ */
+export const checkRedirectResult = async (): Promise<{ user: UserProfile; isNewUser: boolean } | null> => {
+    const result = await getRedirectResult(auth);
+    if (!result) return null;
+    return resolveUserProfile(result);
 };
 
 export const updateFreefireId = async (

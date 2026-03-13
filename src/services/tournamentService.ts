@@ -18,10 +18,19 @@ export const getTournament = async (id: string): Promise<Tournament | null> => {
     return snap.exists() ? ({ id: snap.id, ...snap.data() } as Tournament) : null;
 };
 
-export const subscribeTournaments = (callback: (ts: Tournament[]) => void): Unsubscribe => {
+export const subscribeTournaments = (
+    callback: (ts: Tournament[]) => void,
+    onError?: (error: Error) => void
+): Unsubscribe => {
     return onSnapshot(
         query(collection(db, 'tournaments'), orderBy('startDateTime', 'asc')),
-        snap => callback(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Tournament))
+        snap => callback(snap.docs.map(d => ({ id: d.id, ...d.data() }) as Tournament)),
+        error => {
+            console.error('Firestore subscription error:', error);
+            // Return empty array on error so loading resolves
+            callback([]);
+            onError?.(error);
+        }
     );
 };
 

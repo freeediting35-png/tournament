@@ -1,16 +1,27 @@
 {
-    "version": 2,
-    "framework": "vite",
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/backend/server.js"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ],
-    "installCommand": "npm install",
-    "buildCommand": "npm run build"
+    "version":  2,
+    "framework":  "vite",
+    "rewrites":  [
+                     {
+                         "source":  "/api/(.*)",
+                         "destination":  "/backend/server.js"
+                     },
+                     {
+                         "source":  "/(.*)",
+                         "destination":  "/index.html"
+                     }
+                 ],
+    "installCommand":  "npm install",
+    "buildCommand":  "npm run build",
+    "build":  {
+                  "env":  {
+                              "VITE_FIREBASE_API_KEY":  "AIzaSyDeUHLMvQw5NXJ5HZR5lJ9Da7N7ZqBhjpo",
+                              "VITE_BACKEND_URL":  "https://blazearena.vercel.app",
+                              "VITE_FIREBASE_PROJECT_ID":  "cyber-rpg",
+                              "VITE_FIREBASE_APP_ID":  "1:986429953692:web:62e271be56419dcc3cff59",
+                              "VITE_FIREBASE_AUTH_DOMAIN":  "cyber-rpg.firebaseapp.com",
+                              "VITE_FIREBASE_MESSAGING_SENDER_ID":  "986429953692",
+                              "VITE_FIREBASE_STORAGE_BUCKET":  "cyber-rpg.firebasestorage.app"
+                          }
+              }
 }
